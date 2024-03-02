@@ -1,7 +1,7 @@
 from .models import SpotifyToken
 from django.utils import timezone
 from datetime import timedelta
-from requests import post
+from requests import post, put, get
 from dotenv import load_dotenv
 import os
 
@@ -10,6 +10,7 @@ load_dotenv()
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
+BASE_URL = os.getenv("BASE_URL")
 
 
 # Verify is there're saved tokens associated to an user session
@@ -70,3 +71,28 @@ def refresh_spotify_token(session_id):
     refresh_token = response.get('refresh_token')
 
     update_or_create_user_tokens(session_id, access_token, token_type, expires_in, refresh_token)
+
+
+# Perform request to Spotify API endpoint
+def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False):
+    
+    tokens = get_user_tokens(session_id)
+    
+    headers = {
+        'Content-Type':'application/json',
+        'Authorization': f'Bearer {tokens.access_token}'
+    }
+    
+    if post_:
+        post(BASE_URL + endpoint, headers = headers)
+    
+    if put_:
+        put(BASE_URL + endpoint, headers = headers)
+    
+    response = get(BASE_URL + endpoint,{},headers=headers)
+    print(response)
+
+    try:
+        return response.json()
+    except:
+        return ({'error':'Request error.'})

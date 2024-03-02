@@ -1,2 +1,14 @@
 <h1>Ping</h1>
 <h1>Pong!</h1>
+
+<ol>
+    <li>First step --> Authenticate: <a href="{% url "spotify:get-auth-url" %}">spotify/get-auth-url</a></li>
+    <li>Check if u're authenticated: <a href="{% url "spotify:is-authenticated" %}">spotify/is-authenticated</a></li>
+    <h4>Just for authenticated users.</h4>
+    <li><a href="{% url "spotify:all-tokens" %}">spotify/all-tokens</a></li>
+    <li><a href="{% url "spotify:current-song" %}">spotify/get-current-song</a></li>
+    <li><a href="{% url "spotify:songs-history" %}">spotify/songs-history</a></li>
+    <li><a href="{% url "spotify:top-artists" %}">spotify/top-artists-and-genres</a></li>
+    <li><a href="{% url "spotify:top-tracks" %}">spotify/top-tracks</a></li>
+    <li><a href="{% url "spotify:user-info" %}">spotify/user-info</a></li>
+</ol>
