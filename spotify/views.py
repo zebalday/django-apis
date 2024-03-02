@@ -4,6 +4,7 @@ from requests import Request, post
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from .serializers import SpotifyTokensSerializer
 from .models import SpotifyToken
 from .util import get_user_tokens, update_or_create_user_tokens, is_spotify_authenticated
 import os
@@ -68,10 +69,23 @@ def spotify_callback(request, format=None):
     # Saving tokens on the database
     update_or_create_user_tokens(request.session.session_key, access_token=access_token, token_type=token_type, expires_in=expires_in, refresh_token=refresh_token)
 
-    return redirect("frontend:")
+    return redirect("spotify:is-authenticated")
 
 
 class IsAuthenticated(APIView):
     def get(self, request, format=None):
-        is_authenticated = is_spotify_authenticated(request.session.session_key)
-        return Response({'status':is_authenticated}, status.HTTP_200_OK)
+        is_authenticated, tokens = is_spotify_authenticated(request.session.session_key)
+        
+        tokens = SpotifyTokensSerializer(tokens).data
+        
+        return Response({'status':is_authenticated,
+                        'tokens':tokens},
+                        status.HTTP_200_OK)
+
+
+class ListAllTokens(APIView):
+
+    def get(self, request, format=None):
+        all_tokens = SpotifyToken.objects.all()
+        serializer = SpotifyTokensSerializer(all_tokens, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
