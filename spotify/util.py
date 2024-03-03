@@ -74,7 +74,7 @@ def refresh_spotify_token(session_id):
 
 
 # Perform request to Spotify API endpoint
-def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False):
+def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False, params_={}):
     
     tokens = get_user_tokens(session_id)
     
@@ -89,8 +89,9 @@ def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False):
     if put_:
         put(BASE_URL + endpoint, headers = headers)
     
-    response = get(BASE_URL + endpoint,{},headers=headers)
-    print(response)
+    
+    response = get(BASE_URL + endpoint, headers=headers, params=params_)
+    print(response.url)
 
     try:
         return response.json()
